@@ -1,0 +1,105 @@
+-- Rank movies by rating within each year
+select release_year, title, rating,
+rank() over (
+	partition by release_year
+    order by rating desc
+    ) as movie_rank
+from netflix_titles
+order by 1, 4;
+
+
+-- Top-rated movie from each country
+with ranked_movies as (
+	select release_year, country, title, rating,
+	rank() over (
+		partition by country
+		order by rating desc
+		) as rn
+	from netflix_titles
+)
+select title, country, rating from ranked_movies
+where rn =1
+order by country;
+
+
+-- Running total of vote counts by year
+with yarly_votes as (
+	select release_year, sum(vote_count) as yearly_votes
+    from netflix_titles
+    group by release_year
+    )
+select release_year, yearly_votes, sum(yearly_votes) over(
+order by release_year) as running_total
+from yarly_votes
+order by release_year;
+
+
+-- Compare each movie rating to the average rating of its release year
+select
+	title,
+    release_year,
+    rating,
+    avg(rating) over(
+		partition by release_year
+        ) as avg_rating,
+	rating - avg(rating) over(
+		partition by release_year
+        ) as diff_rating
+from netflix_titles
+order by 2,3 desc;
+
+
+-- Find titles appearing in both datasets
+select 
+	n.title
+from netflix_titles n
+inner join tv_shows t
+on n.title = t.title;
+
+
+-- Compare average ratings
+select type, avg(rating)
+from netflix_content
+group by type;
+
+
+-- Find directors who worked on both movies and TV shows
+select 
+	n.director,
+    n.title as movies,
+    t.title as tv_shows
+from netflix_titles n
+inner join tv_shows t
+on n.director = t.director;
+
+
+
+select
+    director, type,
+    SUM(rating * vote_count) AS weighted_score
+from netflix_content
+where director is not null
+and director <> ''
+group by director, type
+order by weighted_score desc
+limit 5;
+
+
+-- Which genre has become more popular over time?
+select 
+	genres,
+	case
+		when release_year < 2017 then 'Before 2017'
+        else '2017 and After'
+	end as period,
+    avg(popularity) as avg_popularity
+from netflix_titles
+group by
+	genres,
+	case
+		when release_year < 2017 then 'Before 2017'
+        else '2017 and After'
+	end 
+order by avg_popularity desc;
+    
+    
