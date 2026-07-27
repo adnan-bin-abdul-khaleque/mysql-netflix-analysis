@@ -1,0 +1,146 @@
+-- create database
+create database netflix_db;
+
+
+-- Create table 
+CREATE TABLE netflix_titles (
+    show_id INT PRIMARY KEY,
+    type VARCHAR(20),
+    title VARCHAR(255),
+    director TEXT,
+    cast TEXT,
+    country VARCHAR(255),
+    date_added DATE,
+    release_year YEAR,
+    rating DECIMAL(4,2),
+    duration VARCHAR(50),
+    genres VARCHAR(255),
+    language VARCHAR(100),
+    description TEXT,
+    popularity DECIMAL(10,3),
+    vote_count INT,
+    vote_average DECIMAL(4,2),
+    budget BIGINT,
+    revenue BIGINT
+);
+
+-- Inserting Data into table
+LOAD DATA INFILE 'C:/csv_file_path'
+INTO TABLE netflix_titles
+CHARACTER SET utf8mb4
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS
+(
+show_id,
+type,
+title,
+director,
+cast,
+country,
+date_added,
+release_year,
+rating,
+duration,
+genres,
+language,
+description,
+popularity,
+vote_count,
+vote_average,
+budget,
+revenue
+);
+
+
+
+-- Create table for tv_shows
+CREATE TABLE tv_shows (
+    show_id INT PRIMARY KEY,
+    type VARCHAR(20),
+    title VARCHAR(255),
+    director TEXT,
+    cast TEXT,
+    country VARCHAR(255),
+    date_added DATE,
+    release_year YEAR,
+    rating DECIMAL(4,2),
+    duration VARCHAR(50),
+    genres VARCHAR(255),
+    language VARCHAR(100),
+    description TEXT,
+    popularity DECIMAL(10,3),
+    vote_count INT,
+    vote_average DECIMAL(4,2)
+);
+
+-- Inserting data for tv_shows
+LOAD DATA INFILE 'C:/csv_file_path'
+INTO TABLE tv_shows
+CHARACTER SET utf8mb4
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS
+(
+show_id,
+type,
+title,
+director,
+cast,
+country,
+date_added,
+release_year,
+rating,
+duration,
+genres,
+language,
+description,
+popularity,
+vote_count,
+vote_average
+);
+
+
+-- Creating view
+CREATE VIEW netflix_content AS
+SELECT
+    show_id,
+    type,
+    title,
+    director,
+    cast,
+    country,
+    date_added,
+    release_year,
+    rating,
+    duration,
+    genres,
+    language,
+    description,
+    popularity,
+    vote_count,
+    vote_average
+FROM netflix_titles
+
+UNION ALL
+
+SELECT
+    show_id,
+    type,
+    title,
+    director,
+    cast,
+    country,
+    date_added,
+    release_year,
+    rating,
+    duration,
+    genres,
+    language,
+    description,
+    popularity,
+    vote_count,
+    vote_average
+FROM tv_shows;
