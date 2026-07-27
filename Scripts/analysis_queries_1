@@ -1,0 +1,75 @@
+-- Top 10 highest-rated title
+select title, type, country, language, release_year, rating, popularity
+from netflix_content
+order by rating desc, popularity desc
+limit 10;
+
+
+-- Count movies and TV shows
+select type, count(*) from netflix_content
+group by type;
+
+-- Top 10 countries with the most titles
+select country, count(*) as Total from netflix_content
+group by country
+order by Total desc
+limit 10;
+
+
+-- Average rating by language
+select language, avg(rating) as avg_rating
+from netflix_content
+group by language
+order by 2 desc;
+
+
+-- Directors with at least 20 titles
+select director, count(title) Total_Movies
+from netflix_titles
+group by 1
+having Total_Movies >= 10
+order by 2 desc;
+
+
+-- Genres with highest average rating
+select genres, avg(rating)
+from netflix_content
+group by genres
+order by 2 desc;
+
+
+-- Top 15 most popular movies
+select title, director, release_year, popularity, country
+from netflix_titles
+order by 4 desc
+limit 15;
+
+
+-- Top 15 most popular tv_shows
+select title, release_year, country, popularity
+from tv_shows
+order by 4 desc
+limit 15;
+
+
+
+-- Countries whose average popularity is above the global average
+select country, avg(popularity) as ppl_fav
+from netflix_titles
+group by country
+having ppl_fav > (
+	select avg(popularity)
+    from netflix_titles
+    )
+order by 2 desc;
+
+
+-- Years with the most releases
+select release_year, count(title)
+from netflix_titles
+group by 1
+order by 1 desc;
+
+
+
+
